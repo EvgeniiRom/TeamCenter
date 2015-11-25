@@ -8,8 +8,38 @@ var templater = require("./templater.js");
 function ups(response)
 {
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
-	response.write(templater.get_header()+"Ups!!!"+templater.get_footer());
+	response.write(templater.get_header()+'<div class="message">А туда ли ты зашёл?</div>'+templater.get_footer());
 	response.end();  
+}
+
+function png(response, request) {
+	var pathname = url.parse(request.url).pathname;
+	fs.readFile(pathname.substring(1, pathname.length), "binary", function(err, file){		
+		if(err) {
+			response.writeHead(500, {"Content-Type": "text/plain"});
+			response.write(err + "\n");
+			response.end();
+		} else {
+			response.writeHead(200, {"Content-Type": "image/png"});
+			response.write(file, "binary");
+			response.end();
+		}
+	});
+}
+
+function css(response, request) {
+	var pathname = url.parse(request.url).pathname;
+	fs.readFile(pathname.substring(1, pathname.length), "utf8", function(err, data){
+		if(err) {
+			response.writeHead(500, {"Content-Type": "text/plain"});
+			response.write(err + "\n");
+			response.end();
+		} else {		
+			response.writeHead(200, {"Content-Type": "text/css; charset=utf-8"});
+			response.write(data);
+			response.end();
+		}
+	});
 }
 
 function start(response, request) {
@@ -28,16 +58,22 @@ function start(response, request) {
 
 	   		var cont = "";
 	   		cont+=templater.get_header();
-			for (var i in rows)
+	   		if(rows.length>0)
+	   		{
+	   			cont+='<table class="questionTable"><tbody>'
+				for (var i in rows)
+				{
+					cont+='<tr><td><div class="question"><a href="ans?q='+rows[i].id+'">'+rows[i].q_text+'</a></div></td>'+
+					'<td><div class="delButton"><a href="/delQuestion?q='+rows[i].id+'">Удалить</a></div></td></tr>';
+				}
+			}
+			else
 			{
-				cont+='<a href="ans?q='+rows[i].id+'">'+rows[i].q_text+'</a><br>';
+				cont+='<div class="message">Вопросов нет. Пожалуйста, загрузите вопросы.</div>';
 			}
 			connection.end();
 
-			cont+=templater.get_textForm("/start")
-			+templater.get_loadForm("/upload")
-			+'<a href="./result">Результаты</a>'
-			+templater.get_footer();      	
+			cont+='</tbody></table>'+templater.get_footer();      	
 
 			response.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});  
 	      	response.write(cont);
@@ -127,6 +163,9 @@ function commit(response, request) {
 	request.addListener("end", function() {	
 		connection.connect;
 		var answer = querystring.parse(postData).text;
+		var cont = templater.get_header()+
+		'<div class="message">Ответ принят</div>'+
+		templater.get_footer();
 	    if(answer!=null&&answer!="")
 	    {
 	      	var post  = {q_id: _get['q'], a_text: querystring.parse(postData).text};
@@ -135,7 +174,7 @@ function commit(response, request) {
 			});		
 	    }
 		response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
-		response.write("Answer OK");
+		response.write(cont);
 		response.end();
 	});
 	
@@ -144,7 +183,7 @@ function commit(response, request) {
 function ans(response, request) {	
 	var _get = url.parse(request.url, true).query;
 	
-	if(_get['q']!="undefined")
+	if(_get['q']!=null)
 	{
 		var connection = mysql.createConnection({
 		    host     : 'localhost',
@@ -158,7 +197,7 @@ function ans(response, request) {
 			{
 				var cont = templater.get_header()
 				+rows[0].q_text+'<br>'
-				+templater.get_textForm('/commit?q='+_get['q']);
+				+templater.get_textForm('/commit?q='+_get['q'], "Отправить")
 				+templater.get_footer();		
 			  	connection.end();
 
@@ -202,9 +241,58 @@ function result(response, request) {
     });  	
 }
 
+function addQuestion(response, request) {
+	var cont = templater.get_header()+
+	templater.get_textForm("/start", "Добавить")+
+	templater.get_footer();
+	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
+  	response.write(cont);  	
+  	response.end();   
+}
 
+function delQuestion(response, request) {
+	var _get = url.parse(request.url, true).query;
+	if(_get['q']!=null)
+	{
+		console.log(_get['q']);
+		var connection = mysql.createConnection({
+		    host     : 'localhost',
+		    user     : 'root',
+		    password : '',
+		    database : 'node'
+		});
+
+		connection.query("DELETE FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
+			var cont = templater.get_header()+
+			'<div class="message">Что-то было удалено :)</div>'+
+			templater.get_footer();
+			response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+			response.write(cont);
+		  	response.end();
+		});
+	}
+	else
+	{
+		ups(response);
+	} 
+}
+
+function uploadQuestions(response, request) {
+	var cont = templater.get_header()+
+	templater.get_loadForm("/upload")+
+	templater.get_footer();
+	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
+  	response.write(cont);  	
+  	response.end();   
+}
+
+exports.png = png;
+exports.css = css;
 exports.start = start;
 exports.upload = upload;
 exports.commit = commit;
 exports.ans = ans;
 exports.result = result;
+exports.addQuestion = addQuestion;
+exports.delQuestion = delQuestion;
+exports.uploadQuestions = uploadQuestions;

@@ -1,0 +1,125 @@
+/*topsidebar*/
+.menu{
+  padding-top: 1px;
+}
+.menu ul{
+    list-style-type: none;
+}
+.menu ul li{
+    float: left
+}
+
+/* Style the body and outer container */
+
+body {
+  margin: 0;
+  color: #333;
+  background-color: #999999;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  line-height: 1.5em;
+}
+
+#header {
+  height: 160px;
+}
+
+#container {
+  width: 960px;
+  background: #fff;
+  margin: 20px auto;
+  padding: 20px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;  
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+}
+
+
+.message {
+  color: #999999;
+}
+
+/* Style the questions */
+.questionTable {
+  width: 100%;
+}
+
+.question a{
+  text-decoration: none;
+  color: #555555;
+  width: 100%;
+}
+
+.delButton {
+  text-align: right;
+}
+
+.delButton a{
+  text-decoration: none;
+  color: #999999;
+}
+
+/* Forms */
+
+.textForm textarea{
+  width: 100%;
+  rows: 1;
+}
+
+
+/* The logo and footer */
+
+#logo {
+  display: block;
+  width: 300px;
+  padding: 0 660px 20px 0;
+  border: none;
+  border-bottom: 1px solid #999999;
+}
+
+#footer {
+  border-top: 1px solid #999999;
+  margin-top: 40px;
+  padding: 20px 0 0 0;
+  font-size: .8em;
+}
+/* buttons */
+
+.buttons {
+  text-align: center;
+  margin: 35px 30px 0 0; 
+}
+
+.buttons a{
+  text-decoration: none;
+  display: inline;
+  margin-left: 20px;
+  padding: 10px;
+  float: right;
+  border: 2px solid #666666;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;  
+  border-radius: 5px;
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  color: #fff;
+  background: #999999;
+  font-weight: bold;
+  -webkit-appearance: none;
+}
+
+.buttons a:hover, .buttons a:active {
+  cursor: pointer;
+  background: #fff;
+  color: #999999;
+}
+
+.buttons a:active {
+  background: #eee;
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+}
