@@ -167,11 +167,23 @@ function commit(response, request) {
 		'<div class="message">Ответ принят</div>'+
 		templater.get_footer();
 	    if(answer!=null&&answer!="")
-	    {
-	      	var post  = {q_id: _get['q'], a_text: querystring.parse(postData).text};
-			var query = connection.query('INSERT INTO answers SET ?', post, function(err, result) {
-	  		// Neat!
-			});		
+	    {	
+	    	var post  = {a_text: answer};
+	    	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id', function(err, rows, fields) {
+		    	if(rows.length>0)
+		    	{
+		    		var query = connection.query('UPDATE answers SET ? WHERE q_id='+parseInt(_get["q"], 10), post, function(err, result) {
+						connection.end();
+					});	
+		    	}
+		    	else
+		    	{		    		
+					var query = connection.query('INSERT INTO answers SET ?', post, function(err, result) {
+						connection.end();
+					});	
+		    	}		    	
+		    });      	
+	      		
 	    }
 		response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
 		response.write(cont);
@@ -196,18 +208,27 @@ function ans(response, request) {
 			if(rows.length>0)
 			{
 				var cont = templater.get_header()
-				+rows[0].q_text+'<br>'
-				+templater.get_textForm('/commit?q='+_get['q'], "Отправить")
-				+templater.get_footer();		
-			  	connection.end();
-
-				response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
-				response.write(cont);
-			  	response.end();
+				+rows[0].q_text+'<br>';
+				connection.query("SELECT * FROM answers WHERE ?", {q_id: _get['q']}, function(err, rows, fields){
+					if(rows.length>0)
+					{
+						cont+=templater.get_textForm('/commit?q='+_get['q'], rows[0].a_text, "Отправить");
+					}
+					else
+					{
+						cont+=templater.get_textForm('/commit?q='+_get['q'], "", "Отправить");
+					}
+				  	connection.end();
+					cont+=templater.get_footer();
+					response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+					response.write(cont);
+				  	response.end();
+				});
 		  	}
 		  	else
 			{
-				ups(response);
+				ups(response);		
+			  	connection.end();
 			}
 		});	
 	}
@@ -243,7 +264,7 @@ function result(response, request) {
 
 function addQuestion(response, request) {
 	var cont = templater.get_header()+
-	templater.get_textForm("/start", "Добавить")+
+	templater.get_textForm("/start", "", "Добавить")+
 	templater.get_footer();
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
   	response.write(cont);  	

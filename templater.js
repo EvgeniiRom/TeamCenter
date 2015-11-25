@@ -51,10 +51,10 @@ function get_footer()
 '</html>'
 }	   
 
-function get_textForm(action, textButton)
+function get_textForm(action, text, textButton)
 {
 	return '<form action="'+action+'" method="post" class="textForm">'+
-    '<textarea name="text"></textarea><br>'+
+    '<textarea name="text">'+text+'</textarea><br>'+
     '<input type="submit" value="'+textButton+'" />'+
     '</form>';
 }
