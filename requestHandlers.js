@@ -168,7 +168,7 @@ function commit(response, request) {
 		templater.get_footer();
 	    if(answer!=null&&answer!="")
 	    {	
-	    	var post  = {a_text: answer};
+	    	var post  = {q_id: _get["q"], a_text: answer};
 	    	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id', function(err, rows, fields) {
 		    	if(rows.length>0)
 		    	{
