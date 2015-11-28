@@ -4,6 +4,9 @@ var fs = require("fs");
 var formidable = require("formidable");
 var url = require("url");
 var templater = require("./templater.js");
+var secrets = require("./secrets.js");
+
+mysqlpass = secrets.mysqlpass;
 
 function ups(response)
 {
@@ -46,7 +49,7 @@ function start(response, request) {
 	var connection = mysql.createConnection({
 	    host     : 'localhost',
 	    user     : 'root',
-	    password : '',
+	    password : mysqlpass,
 	    database : 'node'
 	});
 
@@ -103,7 +106,7 @@ function upload(response, request) {
 	var connection = mysql.createConnection({
 	    host     : 'localhost',
 	    user     : 'root',
-	    password : '',
+	    password : mysqlpass,
 	    database : 'node'
 	});
 
@@ -147,7 +150,7 @@ function commit(response, request) {
 	var connection = mysql.createConnection({
 	    host     : 'localhost',
 	    user     : 'root',
-	    password : '',
+	    password : mysqlpass,
 	    database : 'node'
 	});  
   	var postData = "";
@@ -200,7 +203,7 @@ function ans(response, request) {
 		var connection = mysql.createConnection({
 		    host     : 'localhost',
 		    user     : 'root',
-		    password : '',
+		    password : mysqlpass,
 		    database : 'node'
 		});
 
@@ -242,7 +245,7 @@ function result(response, request) {
 	var connection = mysql.createConnection({
 	    host     : 'localhost',
 	    user     : 'root',
-	    password : '',
+	    password : mysqlpass,
 	    database : 'node'
 	});
 
@@ -279,7 +282,7 @@ function delQuestion(response, request) {
 		var connection = mysql.createConnection({
 		    host     : 'localhost',
 		    user     : 'root',
-		    password : '',
+		    password : mysqlpass,
 		    database : 'node'
 		});
 
