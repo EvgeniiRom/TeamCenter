@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 
 var qstr = [ 'DROP TABLE  if EXISTS questions;',
     'create table questions ( ' +
-    'id Int not null Primary key, ' +
+    'id Int not null Primary key auto_increment, ' +
     'q_text varchar( 250 ) )' ];
 
 connection.query( qstr[ 0 ], function( err, rows, fields ) {

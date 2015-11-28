@@ -93,6 +93,7 @@ function start(response, request) {
 		connection.connect;
 	    if(question!=null&&question!="")
 	    {
+			console.log( "Try add new question" + question );
 			connection.query('INSERT INTO questions SET ?', {q_text: question}, function(err, result) {
 	  			selectAllQuestions();	 
 			});		
