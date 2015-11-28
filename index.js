@@ -3,7 +3,7 @@ var router = require("./router");
 var requestHandlers = require("./requestHandlers");
 
 var handle = {};
-handle["/"] = requestHandlers.start;
+handle["/"] = requestHandlers.login;
 handle["css"] = requestHandlers.css;
 handle["png"] = requestHandlers.png;
 handle["/start"] = requestHandlers.start;
@@ -14,6 +14,7 @@ handle["/result"] = requestHandlers.result;
 handle["/addQuestion"] = requestHandlers.addQuestion;
 handle["/delQuestion"] = requestHandlers.delQuestion;
 handle["/uploadQuestions"] = requestHandlers.uploadQuestions;
+handle["/login"] = requestHandlers.login;
 
 
 server.start(router.route, handle);

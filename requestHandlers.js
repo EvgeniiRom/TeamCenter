@@ -192,7 +192,7 @@ function commit(response, request) {
 	
 }
 
-function ans(response, request) {	
+function ans(response, request) {
 	var _get = url.parse(request.url, true).query;
 	
 	if(_get['q']!=null)
@@ -307,6 +307,15 @@ function uploadQuestions(response, request) {
   	response.end();   
 }
 
+function login(response, request) {
+	var cont = templater.get_header()+
+	templater.get_loginForm("/login")+
+	templater.get_footer();
+	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
+	response.write(cont);
+	response.end();
+}
+
 exports.png = png;
 exports.css = css;
 exports.start = start;
@@ -317,3 +326,4 @@ exports.result = result;
 exports.addQuestion = addQuestion;
 exports.delQuestion = delQuestion;
 exports.uploadQuestions = uploadQuestions;
+exports.login = login;

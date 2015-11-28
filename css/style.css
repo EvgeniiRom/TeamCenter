@@ -61,14 +61,6 @@ body {
   color: #999999;
 }
 
-/* Forms */
-
-.textForm textarea{
-  width: 100%;
-  rows: 1;
-}
-
-
 /* The logo and footer */
 
 #logo {
@@ -117,8 +109,69 @@ body {
   color: #999999;
 }
 
-.buttons a:active {
+.buttons:active {
   background: #eee;
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
+}
+
+.form1, .form2 {
+  margin: 20px auto;
+  border: 2px solid #666;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;  
+  border-radius: 5px;
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8);
+}
+
+.form1{  
+  padding: 40px 20px;
+}
+.form2{  
+  padding: 20px;
+}
+
+.form1 input, textarea, .form2 input, textarea {
+  display: block;
+  padding: 4px;
+  border: 2px solid #666;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;    
+  border-radius: 5px;
+  background: #fff;
+}
+
+.form1 input, textarea {
+  width: 80%;
+}
+
+.form2 textarea {
+  width: 100%;
+}
+
+.form1 label {
+  display: block;
+  float: left;
+  clear: left;
+  text-align: right;
+  width: 15%;
+  padding: 2px 0 0 0;
+  margin: 0 10px 0 0;
+}
+
+.formButton {
+  width: 30%;
+}
+
+.formButton:hover {  
+  background: #ddd;
+}
+
+.formButton:active {
+  background: #ddd;
   -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
   -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
   box-shadow: 0 0 .5em rgba(0, 0, 0, .8) inset;
