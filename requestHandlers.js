@@ -169,7 +169,7 @@ function commit(response, request) {
 	    if(answer!=null&&answer!="")
 	    {	
 	    	var post  = {q_id: _get["q"], a_text: answer};
-	    	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id', function(err, rows, fields) {
+	    	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id AND ?',{q_id: _get["q"]} , function(err, rows, fields) {
 		    	if(rows.length>0)
 		    	{
 		    		var query = connection.query('UPDATE answers SET ? WHERE q_id='+parseInt(_get["q"], 10), post, function(err, result) {
@@ -177,7 +177,7 @@ function commit(response, request) {
 					});	
 		    	}
 		    	else
-		    	{		    		
+		    	{
 					var query = connection.query('INSERT INTO answers SET ?', post, function(err, result) {
 						connection.end();
 					});	
