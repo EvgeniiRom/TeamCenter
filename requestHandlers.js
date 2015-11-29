@@ -110,22 +110,26 @@ function upload(response, request) {
 		  	if (err) {
 				fs.unlink("tmp/test.txt");
 				fs.rename(files.upload.path, "tmp/test.txt");
-		  	}
+			}
 
-		  	fs.readFile("tmp/test.txt", "utf8", function(err, data){
-				lines = data.split('\n');
-				connection.connect;
-				for (i in lines)
+			fs.readFile("tmp/test.txt", "utf8", function(err, data){		  		
+				connection.connect;				
+				var lines = data.split('\n');
+				function insertQuestions(lines, index)
 				{
-					if(lines[i]!="")
-					{
-						connection.query('INSERT INTO questions SET ?', {q_text: lines[i]}, function(err, result) {
-							// Neat!
-						});
-					}
+					connection.query('INSERT INTO questions SET ?', {q_text: lines[index]}, function(err, result) {
+							if(lines.length-1>index)
+							{
+								index++;
+								insertQuestions(lines, index);
+							}
+							else
+							{
+								connection.end();
+							}
+					});
 				}
-				connection.end();
-
+				insertQuestions(lines, 0);
 				cont+="Файл принят! :)"+
 		  		templater.get_footer();
 
@@ -134,7 +138,7 @@ function upload(response, request) {
 				response.end();
 			});
 		});			
-  	});
+	});
 }
 
 function commit(response, request) {
