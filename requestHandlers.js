@@ -6,7 +6,7 @@ var url = require("url");
 var templater = require("./templater.js");
 var secrets = require("./secrets.js");
 
-mysqlpass = secrets.mysqlpass;
+var mysqlAccess = secrets.mysqlAccess;
 
 function ups(response)
 {
@@ -46,12 +46,7 @@ function css(response, request) {
 }
 
 function start(response, request) {
-	var connection = mysql.createConnection({
-	    host     : 'localhost',
-	    user     : 'root',
-	    password : mysqlpass,
-	    database : 'node'
-	});
+	var connection = mysql.createConnection(mysqlAccess);
 
   	var postData = "";
 	
@@ -104,12 +99,7 @@ function start(response, request) {
 }
 
 function upload(response, request) {
-	var connection = mysql.createConnection({
-	    host     : 'localhost',
-	    user     : 'root',
-	    password : mysqlpass,
-	    database : 'node'
-	});
+	var connection = mysql.createConnection(mysqlAccess);
 
 	var form = new formidable.IncomingForm();
 	var cont = templater.get_header();
@@ -148,12 +138,7 @@ function upload(response, request) {
 }
 
 function commit(response, request) {
-	var connection = mysql.createConnection({
-	    host     : 'localhost',
-	    user     : 'root',
-	    password : mysqlpass,
-	    database : 'node'
-	});  
+	var connection = mysql.createConnection(mysqlAccess);  
   	var postData = "";
   	var question = "";
   	var _get = url.parse(request.url, true).query;
@@ -201,12 +186,7 @@ function ans(response, request) {
 	
 	if(_get['q']!=null)
 	{
-		var connection = mysql.createConnection({
-		    host     : 'localhost',
-		    user     : 'root',
-		    password : mysqlpass,
-		    database : 'node'
-		});
+		var connection = mysql.createConnection(mysqlAccess);
 
 		connection.query("SELECT * FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
 			if(rows.length>0)
@@ -243,12 +223,7 @@ function ans(response, request) {
 }
 
 function result(response, request) {
-	var connection = mysql.createConnection({
-	    host     : 'localhost',
-	    user     : 'root',
-	    password : mysqlpass,
-	    database : 'node'
-	});
+	var connection = mysql.createConnection(mysqlAccess);
 
 	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id', function(err, rows, fields) {
     	if (err) throw err;
@@ -280,12 +255,7 @@ function delQuestion(response, request) {
 	if(_get['q']!=null)
 	{
 		console.log(_get['q']);
-		var connection = mysql.createConnection({
-		    host     : 'localhost',
-		    user     : 'root',
-		    password : mysqlpass,
-		    database : 'node'
-		});
+		var connection = mysql.createConnection(mysqlAccess);
 
 		connection.query("DELETE FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
 			var cont = templater.get_header()+

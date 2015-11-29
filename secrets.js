@@ -1,3 +1,8 @@
-var mysqlpass = "28061984";
+var mysqlAccess = {
+	    host     : 'localhost',
+	    user     : 'root',
+	    password : "",
+	    database : 'node'
+	}
 
-exports.mysqlpass = mysqlpass;
+exports.mysqlAccess = mysqlAccess;
