@@ -45,6 +45,29 @@ function css(response, request) {
 	});
 }
 
+function js(response, request) {
+	var pathname = url.parse(request.url).pathname;
+	var fold = pathname.substring(0, 4);
+	console.log(fold);
+	if(fold=="/js/")
+	{
+		fs.readFile(pathname.substring(1, pathname.length), "utf8", function(err, data){
+			if(err) {
+				response.writeHead(500, {"Content-Type": "text/plain"});
+				response.write(err + "\n");
+				response.end();
+			} else {		
+				response.writeHead(200, {"Content-Type": "text/css; charset=utf-8"});
+				response.write(data);
+				response.end();
+			}
+		});
+	}
+	else{		
+		ups(response);
+	}		
+}
+
 function start(response, request) {
 	var connection = mysql.createConnection(mysqlAccess);
 
@@ -61,8 +84,9 @@ function start(response, request) {
 	   			cont+='<table class="questionTable"><tbody>'
 				for (var i in rows)
 				{
-					cont+='<tr><td><div class="question"><a href="ans?q='+rows[i].id+'">'+rows[i].q_text+'</a></div></td>'+
-					'<td><div class="delButton"><a href="/delQuestion?q='+rows[i].id+'">Удалить</a></div></td></tr>';
+					cont+='<tr id="q'+rows[i].id+'"><td><div class="question"><a href="ans?q='+rows[i].id+'">'+rows[i].q_text+'</a></div></td>'+
+					'<td class="delButton"><input value="Удалить" onclick="delQuestion('+rows[i].id+');" type="image" src="img/cross.png"/></td></tr>';
+					//'<td><div class="delButton"><a href="/delQuestion?q='+rows[i].id+'">Удалить</a></div></td></tr>';
 				}
 			}
 			else
@@ -262,9 +286,7 @@ function delQuestion(response, request) {
 		var connection = mysql.createConnection(mysqlAccess);
 
 		connection.query("DELETE FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
-			var cont = templater.get_header()+
-			'<div class="message">Что-то было удалено :)</div>'+
-			templater.get_footer();
+			var cont = "Что-то было удалено";
 			response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
 			response.write(cont);
 		  	response.end();
@@ -272,7 +294,9 @@ function delQuestion(response, request) {
 	}
 	else
 	{
-		ups(response);
+		response.writeHead(500, {"Content-Type": "text/plain"});
+		response.write("Недостаточно параметров");
+		response.end();
 	} 
 }
 
@@ -296,6 +320,7 @@ function login(response, request) {
 
 exports.png = png;
 exports.css = css;
+exports.js = js;
 exports.start = start;
 exports.upload = upload;
 exports.commit = commit;

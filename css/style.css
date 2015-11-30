@@ -56,11 +56,10 @@ body {
   text-align: right;
 }
 
-.delButton a{
-  text-decoration: none;
-  color: #999999;
+.delButton input{
+  width: 15px;
+  height: 15px;
 }
-
 /* The logo and footer */
 
 #logo {

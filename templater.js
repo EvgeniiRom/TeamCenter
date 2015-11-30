@@ -4,6 +4,7 @@ function get_header()
 	'<head>'+
 		'<title>Team Center</title>'+
 		'<link rel="stylesheet" type="text/css" href="css/style.css" />'+
+		'<script src="/js/script.js"></script>'+
 		'<meta  charset="utf-8"/>'+
 		'</head>'+
 	'<body>  '+
