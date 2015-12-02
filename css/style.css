@@ -143,8 +143,18 @@ body {
   background: #fff;
 }
 
-.form1 input, textarea {
+.form1 .textBox {
   width: 80%;
+}
+
+.form1 #submit {
+  width: 70%;
+  float: left;
+  margin-right: 20px;
+}
+
+.form1 #submit2 {
+  width: 23%;
 }
 
 .form2 textarea {
@@ -161,7 +171,7 @@ body {
   margin: 0 10px 0 0;
 }
 
-.formButton {
+.formButton{
   width: 30%;
 }
 

@@ -5,13 +5,15 @@ var formidable = require("formidable");
 var url = require("url");
 var templater = require("./templater.js");
 var secrets = require("./secrets.js");
+var dateParser = require("./dateParser.js");
+var cookieParser = require("./cookieParser.js");
 
 var mysqlAccess = secrets.mysqlAccess;
 
 function ups(response)
 {
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
-	response.write(templater.get_header()+'<div class="message">А туда ли ты зашёл?</div>'+templater.get_footer());
+	response.write(templater.get_header(true)+'<div class="message">А туда ли ты зашёл?</div>'+templater.get_footer());
 	response.end();  
 }
 
@@ -48,7 +50,6 @@ function css(response, request) {
 function js(response, request) {
 	var pathname = url.parse(request.url).pathname;
 	var fold = pathname.substring(0, 4);
-	console.log(fold);
 	if(fold=="/js/")
 	{
 		fs.readFile(pathname.substring(1, pathname.length), "utf8", function(err, data){
@@ -78,7 +79,7 @@ function start(response, request) {
 	    	if (err) throw err;
 
 	   		var cont = "";
-	   		cont+=templater.get_header();
+	   		cont+=templater.get_header(true);
 	   		if(rows.length>0)
 	   		{
 	   			cont+='<table class="questionTable"><tbody>'
@@ -112,7 +113,6 @@ function start(response, request) {
 		connection.connect;
 	    if(question!=null&&question!="")
 	    {
-			console.log( "Try add new question" + question );
 			connection.query('INSERT INTO questions SET ?', {q_text: question}, function(err, result) {
 	  			selectAllQuestions();	 
 			});		
@@ -126,7 +126,7 @@ function upload(response, request) {
 	var connection = mysql.createConnection(mysqlAccess);
 
 	var form = new formidable.IncomingForm();
-	var cont = templater.get_header();
+	var cont = templater.get_header(true);
 
   	form.parse(request, function(error, fields, files) {
 		/* Возможна ошибка в Windows: попытка переименования уже существующего файла */
@@ -180,7 +180,7 @@ function commit(response, request) {
 	request.addListener("end", function() {	
 		connection.connect;
 		var answer = querystring.parse(postData).text;
-		var cont = templater.get_header()+
+		var cont = templater.get_header(true)+
 		'<div class="message">Ответ принят</div>'+
 		templater.get_footer();
 	    if(answer!=null&&answer!="")
@@ -219,7 +219,7 @@ function ans(response, request) {
 		connection.query("SELECT * FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
 			if(rows.length>0)
 			{
-				var cont = templater.get_header()
+				var cont = templater.get_header(true)
 				+rows[0].q_text+'<br>';
 				connection.query("SELECT * FROM answers WHERE ?", {q_id: _get['q']}, function(err, rows, fields){
 					if(rows.length>0)
@@ -256,7 +256,7 @@ function result(response, request) {
 	connection.query('SELECT * FROM questions, answers WHERE questions.id=answers.q_id', function(err, rows, fields) {
     	if (err) throw err;
 
-   		var cont = templater.get_header();
+   		var cont = templater.get_header(true);
 		for (var i in rows)
 		{
 			cont+=rows[i].q_text+"<br><textarea>"+rows[i].a_text+"</textarea><br>";
@@ -270,7 +270,7 @@ function result(response, request) {
 }
 
 function addQuestion(response, request) {
-	var cont = templater.get_header()+
+	var cont = templater.get_header(true)+
 	templater.get_textForm("/start", "", "Добавить")+
 	templater.get_footer();
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
@@ -282,9 +282,7 @@ function delQuestion(response, request) {
 	var _get = url.parse(request.url, true).query;
 	if(_get['q']!=null)
 	{
-		console.log(_get['q']);
 		var connection = mysql.createConnection(mysqlAccess);
-
 		connection.query("DELETE FROM questions WHERE ?", {id: _get['q']}, function(err, rows, fields){
 			var cont = "Что-то было удалено";
 			response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
@@ -294,14 +292,14 @@ function delQuestion(response, request) {
 	}
 	else
 	{
-		response.writeHead(500, {"Content-Type": "text/plain"});
+		response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
 		response.write("Недостаточно параметров");
 		response.end();
 	} 
 }
 
 function uploadQuestions(response, request) {
-	var cont = templater.get_header()+
+	var cont = templater.get_header(true)+
 	templater.get_loadForm("/upload")+
 	templater.get_footer();
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
@@ -310,13 +308,143 @@ function uploadQuestions(response, request) {
 }
 
 function login(response, request) {
-	var cont = templater.get_header()+
-	templater.get_loginForm("/login")+
+	var cont = templater.get_header(false)+
+	templater.get_loginForm("/checkPass")+
 	templater.get_footer();
 	response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});  
 	response.write(cont);
 	response.end();
 }
+
+function checkPass(response, request) {	
+	var connection = mysql.createConnection(mysqlAccess);
+  	var postData = "";
+
+	request.addListener("data", function(postDataChunk) {
+    		postData += postDataChunk;
+  	});
+
+  	request.addListener("end", function() {    	    
+		var login = querystring.parse(postData).login;
+		var pass = querystring.parse(postData).pass;
+		if(login!=null&&pass!=null&&login!=""&&pass!="")
+		{
+			connection.connect;
+			connection.query('SELECT * FROM users WHERE ?', {login: login}, function(err, rows, fields) {
+				if(rows.length>0)
+				{
+					if(rows[0].pass == pass)
+					{
+						var max = 10000000;
+						var min = 1;
+						var random = Math.floor(Math.random() * (max - min + 1)) + min;
+						connection.query('INSERT INTO sessions SET ?', {id: random, user_id: rows[0].id, date: dateParser.getMySQLDate(new Date())}, function(err, rows, fields){
+							connection.end();
+							console.log("Created session: " + random);
+							response.writeHead(200, {"Content-Type": "text/html; charset=utf-8", "Set-Cookie": "id="+random+"; path=/;"});  
+							response.write("ОК");
+							response.end();
+						})						
+					}
+					else
+					{
+						connection.end();
+						response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
+						response.write("Неверный пароль");
+						response.end();
+					}
+				}
+				else
+				{
+					connection.end();
+					response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
+					response.write("Неверный логин");
+					response.end();
+				}
+			});
+		}
+		else
+		{
+			response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
+			response.write("Недостаточно параметров");
+			response.end();
+		}
+	});
+}
+
+function signUp(response, request) {
+	var connection = mysql.createConnection(mysqlAccess);
+  	var postData = "";
+
+	request.addListener("data", function(postDataChunk) {
+    		postData += postDataChunk;
+  	});
+
+  	request.addListener("end", function() {    	    
+		var login = querystring.parse(postData).login;
+		var pass = querystring.parse(postData).pass;
+		if(login!=null&&pass!=null&&login!=""&&pass!="")
+		{
+			connection.connect;
+			connection.query('SELECT * FROM users WHERE ?', {login: login}, function(err, rows, fields) {
+				if(rows.length==0)
+				{
+					var max = 10000000;
+					var min = 1;
+					var random = Math.floor(Math.random() * (max - min + 1)) + min;
+					connection.query('INSERT INTO users SET ?', {login: login, pass: pass}, function(err, rows, fields){
+						connection.query('INSERT INTO sessions SET ?', {id: random, user_id: rows.insertId, date: dateParser.getMySQLDate(new Date())}, function(err, rows, fields){
+							connection.end();
+							response.writeHead(200, {"Content-Type": "text/html; charset=utf-8", "Set-Cookie": "id="+random+"; path=/;"});  
+							response.write("ОК");
+							response.end();
+						})
+					});					
+				}
+				else
+				{
+					connection.end();
+					response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
+					response.write("Логин уже занят");
+					response.end();
+				}
+			});
+		}
+		else
+		{
+			response.writeHead(200, {"Content-Type": "text/plain; charset=utf-8"});
+			response.write("Недостаточно параметров");
+			response.end();
+		}
+	});
+}
+
+function exit(response, request)
+{
+	var connection = mysql.createConnection(mysqlAccess);
+	var cont = templater.get_header(false, '<meta http-equiv="refresh" content="2; url=/">');
+	cookies=cookieParser.getCookies(request);
+	if(cookies["id"]!=null){
+		connection.connect;
+		connection.query('DELETE FROM sessions WHERE ?', {id: cookies["id"]}, function(err, rows, fields){
+			connection.end();
+			console.log("Logout: "+cookies["id"]);
+			cont+='<div class="message">Выход выполнен успешно</div>'+
+			templater.get_footer();
+			response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+			response.write(cont);
+			response.end();
+		});
+	}
+	else{
+		cont+='<div class="message">Вы уже вышли</div>'+
+		templater.get_footer();
+		response.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+		response.write(cont);
+		response.end();
+	}
+}
+
 
 exports.png = png;
 exports.css = css;
@@ -330,3 +458,6 @@ exports.addQuestion = addQuestion;
 exports.delQuestion = delQuestion;
 exports.uploadQuestions = uploadQuestions;
 exports.login = login;
+exports.checkPass = checkPass;
+exports.signUp = signUp;
+exports.exit = exit;

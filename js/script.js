@@ -31,3 +31,65 @@ function delQuestion(data) {
 	req.open('GET', '/delQuestion?q='+data, true);  
 	req.send();
 }
+
+function checkPass() {
+	var req = getXmlHttp();
+	var login = document.getElementById('login');
+	var pass = document.getElementById('pass');
+	var status = document.getElementById('checkStatus');
+
+	var body = 'login=' + encodeURIComponent(login.value)+
+  	'&pass=' + encodeURIComponent(pass.value);
+	req.onreadystatechange = function() {
+		if (req.readyState == 4)
+		{
+			if (req.status = 200)
+			{				
+				if(req.responseText=="ОК"){
+					document.location.replace("/");
+				}
+				else{
+					status.innerHTML = req.responseText;
+				}
+			}
+			else
+			{
+				status.innerHTML = 'Неизвестная ошибка.';
+			}
+		}
+	}
+
+	req.open('POST', '/checkPass', true);  
+	req.send(body);
+}
+
+function signUp() {
+	var req = getXmlHttp();
+	var login = document.getElementById('login');
+	var pass = document.getElementById('pass');
+	var status = document.getElementById('checkStatus');
+
+	var body = 'login=' + encodeURIComponent(login.value)+
+  	'&pass=' + encodeURIComponent(pass.value);
+	req.onreadystatechange = function() {
+		if (req.readyState == 4)
+		{
+			if (req.status = 200)
+			{
+				if(req.responseText=="ОК"){
+					document.location.replace("/");
+				}
+				else{
+					status.innerHTML = req.responseText;
+				}
+			}			
+			else
+			{
+				status.innerHTML = 'Неизвестная ошибка.';
+			}
+		}
+	}
+
+	req.open('POST', '/signUp', true);  
+	req.send(body);
+}

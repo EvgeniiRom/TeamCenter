@@ -3,8 +3,9 @@ var router = require("./router");
 var requestHandlers = require("./requestHandlers");
 
 var handle = {};
-handle["/"] = requestHandlers.login;
+handle["/"] = requestHandlers.start;
 handle["css"] = requestHandlers.css;
+handle["js"] = requestHandlers.js;
 handle["png"] = requestHandlers.png;
 handle["/start"] = requestHandlers.start;
 handle["/upload"] = requestHandlers.upload;
@@ -15,6 +16,9 @@ handle["/addQuestion"] = requestHandlers.addQuestion;
 handle["/delQuestion"] = requestHandlers.delQuestion;
 handle["/uploadQuestions"] = requestHandlers.uploadQuestions;
 handle["/login"] = requestHandlers.login;
+handle["/checkPass"] = requestHandlers.checkPass;
+handle["/signUp"] = requestHandlers.signUp;
+handle["/exit"] = requestHandlers.exit;
 
 
 server.start(router.route, handle);

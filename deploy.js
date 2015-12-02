@@ -26,7 +26,13 @@ var answers = ['Table questions droped',
 	'Table questions created',
 
 	'Table answers droped',
-	'Table answers created'];
+	'Table answers created',
+
+    'Table sessions droped',
+    'Table sessions created',
+
+    'Table users droped',
+    'Table users created'];
 
 var qstr = [ 'DROP TABLE IF EXISTS questions;',
     'CREATE TABLE questions (' +
@@ -37,7 +43,19 @@ var qstr = [ 'DROP TABLE IF EXISTS questions;',
     'CREATE TABLE answers (' +
     'id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, ' +
     'q_id INT, '+
-    'a_text varchar( 250 ));'];
+    'a_text varchar( 250 ));',
+
+    'DROP TABLE IF EXISTS sessions;',
+    'CREATE TABLE sessions (' +
+    'id INT NOT NULL PRIMARY KEY,'+
+    'user_id INT,'+
+    'date DATETIME);',
+
+    'DROP TABLE IF EXISTS users;',
+    'CREATE TABLE users (' +
+    'id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, '+
+    'login varchar( 250 ), '+
+    'pass varchar( 250 ));'];
 
 console.log("Try deploy DB");
 connection.connect;
